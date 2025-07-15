@@ -7,27 +7,30 @@ import math
 
 class MinutiaeFeature(object):
     def __init__(self, locX, locY, Orientation, Type):
-        self.locX = locX
-        self.locY = locY
-        self.Orientation = Orientation
-        self.Type = Type
+        self.locX = locX    #  instance variable holding the X position.
+        self.locY = locY    #   instance variable holding the Y position.
+        self.Orientation = Orientation      # stores the angle or direction of the minutiae.
+        self.Type = Type        # stores the type of minutiae feature (like "termination" or "bifurcation")
 
 class FingerprintFeatureExtractor(object):
     def __init__(self):
-        self._mask = []
-        self._skel = []
-        self.minutiaeTerm = []
-        self.minutiaeBif = []
-        self._spuriousMinutiaeThresh = 10
+        self._mask = []     #used to ignore noise or background
+        self._skel = []     # a thin, single-pixel-wide version of the ridges is formed
+        self.minutiaeTerm = []      # A list to store termination minutiae (ridge ends).
+        self.minutiaeBif = []       # A list to store bifurcation minutiae (where a ridge splits).
+        self._spuriousMinutiaeThresh = 10   # to filter out false minutiae
 
+
+#sets a threshold used to filter out spurious (false) minutiae points 
     def setSpuriousMinutiaeThresh(self, spuriousMinutiaeThresh):
         self._spuriousMinutiaeThresh = spuriousMinutiaeThresh
 
+
     def __skeletonize(self, img):
-        img = np.uint8(img > 128)
-        self._skel = skimage.morphology.skeletonize(img)
-        self._skel = np.uint8(self._skel) * 255
-        self._mask = img * 255
+        img = np.uint8(img > 128)       # converts the grayscale image to a binary image 
+        self._skel = skimage.morphology.skeletonize(img)    # to compute a thinned, 1-pixel-wide version of the ridges.
+        self._skel = np.uint8(self._skel) * 255     # Result: a proper grayscale image for OpenCV or display with 2 pixels: 0 and 255
+        self._mask = img * 255      #  saves the original binary image- img (before skeletonizing) as _mask, multiplying by 255 gives a displayable format
 
     def __computeAngle(self, block, minutiaeType):
         angle = []

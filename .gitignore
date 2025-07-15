@@ -2,4 +2,7 @@ src/__pycache__/removeSpuriousMinutiae.cpython-36.pyc
 src/__pycache__/getTerminationBifurcation.cpython-36.pyc
 .idea/
 venv/
+env/
+*.env
 *.pyc
+
