@@ -33,7 +33,7 @@ class FingerprintFeatureExtractor(object):
         self._mask = img * 255      #  saves the original binary image- img (before skeletonizing) as _mask, multiplying by 255 gives a displayable format
 
     def __computeAngle(self, block, minutiaeType):
-        angle = []
+        angle = [] #keeps angle
         (blkRows, blkCols) = np.shape(block)
         CenterX, CenterY = (blkRows - 1) / 2, (blkCols - 1) / 2
         if (minutiaeType.lower() == 'termination'):
