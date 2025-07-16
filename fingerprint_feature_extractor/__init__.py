@@ -33,17 +33,17 @@ class FingerprintFeatureExtractor(object):
         self._mask = img * 255      #  saves the original binary image- img (before skeletonizing) as _mask, multiplying by 255 gives a displayable format
 
     def __computeAngle(self, block, minutiaeType):
-        angle = [] #keeps angle
-        (blkRows, blkCols) = np.shape(block)
-        CenterX, CenterY = (blkRows - 1) / 2, (blkCols - 1) / 2
-        if (minutiaeType.lower() == 'termination'):
+        angle = []      #keeps angle
+        (blkRows, blkCols) = np.shape(block)        #rows and columns in block(window of pixels)
+        CenterX, CenterY = (blkRows - 1) / 2, (blkCols - 1) / 2     #calculates the center pixel position of the block for use in angle calculation
+        if (minutiaeType.lower() == 'termination'):         # for ridge ending
             sumVal = 0
             for i in range(blkRows):
                 for j in range(blkCols):
-                    if ((i == 0 or i == blkRows - 1 or j == 0 or j == blkCols - 1) and block[i][j] != 0):
-                        angle.append(-math.degrees(math.atan2(i - CenterY, j - CenterX)))
-                        sumVal += 1
-                        if (sumVal > 1):
+                    if ((i == 0 or i == blkRows - 1 or j == 0 or j == blkCols - 1) and block[i][j] != 0):       #focuses only on border pixels of the block, removes background
+                        angle.append(-math.degrees(math.atan2(i - CenterY, j - CenterX)))       # calculates the angle between the vector from the block center (CenterX, CenterY) to the pixel (i, j)
+                        sumVal += 1     #  to keep track of how many such edge ridge pixels were found
+                        if (sumVal > 1):        # For ridge ending, exactly 1 ridge pixel on the block border, if not add nan
                             angle.append(float('nan'))
             return (angle)
 
@@ -58,7 +58,7 @@ class FingerprintFeatureExtractor(object):
                         angle.append(-math.degrees(math.atan2(i - CenterY, j - CenterX)))
                         sumVal += 1
             if (sumVal != 3):
-                angle.append(float('nan'))
+                angle.append(float('nan'))      #  For bifurcation, exactly 3 ridge pixel on the block border, if not add nan to list
             return (angle)
 
     def __getTerminationBifurcation(self):
