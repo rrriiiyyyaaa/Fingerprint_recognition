@@ -1,40 +1,49 @@
 import networkx as nx
-from fingerprint_matching import example  
-from math import sqrt
+import example  
+import feature_extractor
+import math
 import os
 from itertools import product
 
-
 def euclidean_distance(p1, p2):
-    return sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)
+    return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
 
-def build_mst(minutiae_list, root=None):
-    if not root:
-        root = minutiae_list[0]
 
-    tree = nx.Graph()
+def build_mst(minutiae_list):
+    # Convert minutiae to (x, y) tuples
+    points = [(m.locX, m.locY) for m in minutiae_list]
+
+    if not points:
+        return []
+
+    # Initialize sets for visited and unvisited nodes
     visited = set()
-    remaining = set(minutiae_list)
+    mst_edges = []
 
-    tree.add_node(root)
-    visited.add(root)
-    remaining.remove(root)
+    # Start with the first point
+    current = points[0]
+    visited.add(current)
+    unvisited = set(points[1:])
 
-    while remaining:
-        min_dist = float('inf')
-        closest_pair = (None, None)
+    while unvisited:
+        min_edge = None
+        min_distance = float('inf')
+
         for u in visited:
-            for v in remaining:
-                d = euclidean_distance(u, v)
-                if d < min_dist:
-                    min_dist = d
-                    closest_pair = (u, v)
-        u, v = closest_pair
-        tree.add_edge(u, v, weight=min_dist)
-        visited.add(v)
-        remaining.remove(v)
+            for v in unvisited:
+                dist = euclidean_distance(u, v)
+                if dist < min_distance:
+                    min_distance = dist
+                    min_edge = (u, v)
 
-    return tree
+        if min_edge:
+            u, v = min_edge
+            mst_edges.append((u, v, min_distance))
+            visited.add(v)
+            unvisited.remove(v)
+
+    return mst_edges
+
 
 def assign_levels(tree, root):
     levels = {}
@@ -66,13 +75,19 @@ def compute_matching_score(tree1, tree2, level_weights={0: 0.4, 1: 0.3, 2: 0.1, 
 
     return matched_score / total_possible if total_possible else 0.0
 
+term, bif = feature_extractor.extract_and_print_features('enhanced/1.jpg')
+combined = term + bif
+
+tree_1 = build_mst(combined)
+
+term, bif = feature_extractor.extract_and_print_features('enhanced/2.jpg')
+combined = term + bif
+
+tree_2 = build_mst(combined)
+# for edge in tree1:
+#     print(f"From {edge[0]} to {edge[1]}, distance = {edge[2]:.2f}")
 
 
-tre1= build_mst(example.FeaturesTerminations + example.FeaturesBifurcations)
-#minutiae1 = minutiae1 + minutiae_list2
 
-# tree1 = build_mst(minutiae1)
-# tree2 = build_mst(minutiae2)
-
-score = compute_matching_score(tre1, tree2)
+score = compute_matching_score(tree_1, tree_2)
 print(f"Matching Score: {score * 100:.2f}%")
