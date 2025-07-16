@@ -1,8 +1,7 @@
 import cv2
 import numpy as np
 import skimage.morphology
-from skimage.morphology import convex_hull_image, erosion
-from skimage.morphology import square
+from skimage.morphology import convex_hull_image, erosion, square
 import math
 
 class MinutiaeFeature(object):
@@ -139,9 +138,7 @@ class FingerprintFeatureExtractor(object):
 
     def extractMinutiaeFeatures(self, img):
         self.__skeletonize(img)
-
         self.__getTerminationBifurcation()
-
         self.__cleanMinutiae(img)
 
         FeaturesTerm, FeaturesBif = self.__performFeatureExtraction()
