@@ -1,5 +1,6 @@
 import cv2
 import fingerprint_feature_extractor  # Make sure this module is available
+from  feature_extractor import *
 
 def extract_and_print_features(image_path: str):
 
@@ -16,12 +17,4 @@ def extract_and_print_features(image_path: str):
         saveResult=True
     )
 
-    return FeaturesTerminations, FeaturesBifurcations
-
-    # print("\n--- Termination Points ---")
-    # for feature in FeaturesTerminations:
-    #     print(f"X: {feature.locX}, Y: {feature.locY}, Angle: {feature.Orientation}, Type: {feature.Type}")
-
-    # print("\n--- Bifurcation Points ---")
-    # for feature in FeaturesBifurcations:
-    #     print(f"X: {feature.locX}, Y: {feature.locY}, Angle: {feature.Orientation}, Type: {feature.Type}")
+    

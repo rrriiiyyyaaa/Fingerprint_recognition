@@ -1,7 +1,6 @@
 import cv2
 import fingerprint_feature_extractor
-import feature_extractor
-import matching_algo
+
 
 
 if __name__ == '__main__':
